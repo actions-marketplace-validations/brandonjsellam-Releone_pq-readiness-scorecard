@@ -1,0 +1,28 @@
+# Example: drop this into .github/workflows/ in any repo.
+name: PQC readiness
+on: [push, pull_request]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write   # to upload SARIF to the Security tab
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: pqc
+        uses: brandonjsellam-Releone/pq-readiness-scorecard@v1
+        with:
+          path: .
+          fail-on: broken-classical
+
+      - name: Upload SARIF to the Security tab
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.pqc.outputs.sarif-file }}
+
+      - name: Show grade
+        if: always()
+        run: echo "Post-Quantum Readiness grade = ${{ steps.pqc.outputs.grade }} (${{ steps.pqc.outputs.score }}/100)"
