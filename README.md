@@ -33,6 +33,12 @@ jobs:
 | `path` | `.` | Directory to scan |
 | `fail-on` | `broken-classical` | Comma-separated risk classes that fail the build (`broken-classical,quantum-broken,quantum-weakened`) |
 | `min-grade` | `` (off) | Fail below this grade (A–F) |
+| `exclude` | `` (off) | Comma-separated path globs to skip (e.g. `test-fixtures/,examples/`). Also readable from `.pqcbomignore` lines containing `/`. Excluded paths are **counted in the step summary, never silently dropped**. |
+
+The step summary also flags **harvest-now-decrypt-later** urgency: key-establishment findings (KEM/DH/ECDH and RSA
+*key transport* such as RSA-OAEP or static-RSA TLS suites) are the most time-urgent migrations — recorded ciphertext
+is decryptable once a cryptographically-relevant quantum computer exists — while signature findings are forge-later.
+Hardcoded JWT/JOSE tokens are decoded (header segment only, never the payload) and classified by their `alg`.
 
 ## Outputs
 
